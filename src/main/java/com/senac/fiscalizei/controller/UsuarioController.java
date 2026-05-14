@@ -33,6 +33,7 @@ public class UsuarioController {
         return ResponseEntity.ok(usuario);
     }
 
+    @PostMapping
     public ResponseEntity<Usuario> cadastrar(@RequestBody @Valid UsuarioDTO usuarioDTO) {
         return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(usuarioDTO));
     }

@@ -13,7 +13,5 @@ public record UsuarioDTO(
         String senha,
 
         @NotBlank(message = "Cargo do usuário inválido")
-        String role,
-
-        String ativo
+        String role
 ) {}
