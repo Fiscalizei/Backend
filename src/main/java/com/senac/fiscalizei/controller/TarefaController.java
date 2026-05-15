@@ -28,6 +28,11 @@ public class TarefaController {
         return ResponseEntity.ok(tarefas);
     }
 
+    @GetMapping("/colaborador/{id}")
+    public List<Tarefa> listarPorColaborador(@PathVariable Long id) {
+        return tarefaService.findByUsuarioColaboradorId(id);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Tarefa> buscarPorId(@PathVariable Long id) {
         Tarefa tarefa = tarefaService.findById(id);

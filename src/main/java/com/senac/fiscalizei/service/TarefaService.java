@@ -26,6 +26,15 @@ public class TarefaService {
         return tarefaRepository.findAll();
     }
 
+
+    public List<Tarefa> findByUsuarioColaboradorId(Long idUsuarioColaborador) {
+        if (idUsuarioColaborador == null) {
+            throw new TarefaException("ID do usuário colaborador não pode ser nulo");
+        }
+
+        return tarefaRepository.findByUsuarioAtribuidoId(idUsuarioColaborador);
+    }
+
     public Tarefa findById(Long id){
         return tarefaRepository.findById(id).orElseThrow(()-> new TarefaException("Id não encontado!"));
     }
@@ -41,6 +50,7 @@ public class TarefaService {
         }
 
         Tarefa tarefa = new Tarefa(
+                tarefaDto.nome(),
                 tarefaDto.descricao(),
                 tarefaDto.recorrencia(),
                 atribuido,

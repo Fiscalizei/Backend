@@ -32,6 +32,9 @@ public class Usuario {
     @Column()
     boolean ativo;
 
+    @Column(name = "foto_path")
+    private String fotoPath;
+
     public Usuario() {
     }
 
@@ -98,5 +101,21 @@ public class Usuario {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public RoleUsuario getRoleUsuario() {
+        return roleUsuario;
+    }
+
+    public void setRoleUsuario(RoleUsuario roleUsuario) {
+        this.roleUsuario = roleUsuario;
+    }
+
+    public String getFotoPath() {
+        return fotoPath;
+    }
+
+    public void setFotoPath(String fotoPath) {
+        this.fotoPath = fotoPath;
     }
 }

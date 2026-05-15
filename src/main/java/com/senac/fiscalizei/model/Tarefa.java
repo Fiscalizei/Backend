@@ -14,6 +14,9 @@ public class Tarefa {
     private Long id;
 
     @Column(nullable = false, length = 500)
+    private String nome;
+
+    @Column(nullable = false, length = 500)
     private String descricao;
 
     @Enumerated(EnumType.STRING)
@@ -36,7 +39,9 @@ public class Tarefa {
     private Usuario adminCriador;
 
     public Tarefa(){}
-    public Tarefa(String descricao, RecorrenciaTarefa recorrencia,  Usuario usuarioAtribuido, Usuario adminCriador) {
+
+    public Tarefa(String nome, String descricao, RecorrenciaTarefa recorrencia, Usuario usuarioAtribuido, Usuario adminCriador) {
+        this.nome = nome;
         this.descricao = descricao;
         this.recorrencia = recorrencia;
         this.dataCriacao = LocalDateTime.now();
@@ -47,6 +52,14 @@ public class Tarefa {
 
     public Long getId() {
         return id;
+    }
+
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
     }
 
     public String getDescricao() {
