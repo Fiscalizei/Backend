@@ -2,6 +2,7 @@ package com.senac.fiscalizei.service;
 
 import com.senac.fiscalizei.dto.LoginDTO;
 import com.senac.fiscalizei.dto.UsuarioDTO;
+import com.senac.fiscalizei.dto.UsuarioResponseDTO;
 import com.senac.fiscalizei.enums.RoleUsuario;
 import com.senac.fiscalizei.exception.UsuarioException;
 import com.senac.fiscalizei.model.Usuario;
@@ -43,6 +44,13 @@ public class UsuarioService {
         return repository.findById(id).orElseThrow(() -> new UsuarioException("Usuário não encontrado!"));
     }
 
+    public List<UsuarioResponseDTO> listarColaboradores() {
+        return repository.findByRoleUsuarioOrderByNomeAsc(RoleUsuario.COLABORADOR)
+                .stream()
+                .map(u -> new UsuarioResponseDTO(u.getId(), u.getNome(), u.getEmail()))
+                .toList();
+    }
+
     public Usuario criar(UsuarioDTO dto) {
         if (repository.existsByEmail(dto.email())) {
             throw new UsuarioException("E-mail já cadastrado no sistema.");
@@ -52,7 +60,7 @@ public class UsuarioService {
                 dto.nome(),
                 dto.email(),
                 dto.senha(),
-                RoleUsuario.valueOf(dto.role().toUpperCase()), // Converte "admin" para Role.ADMIN
+                RoleUsuario.valueOf(dto.role().toUpperCase()), 
                 true
         );
 

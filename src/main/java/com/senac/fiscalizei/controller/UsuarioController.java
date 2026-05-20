@@ -2,6 +2,7 @@ package com.senac.fiscalizei.controller;
 
 import com.senac.fiscalizei.dto.LoginDTO;
 import com.senac.fiscalizei.dto.UsuarioDTO;
+import com.senac.fiscalizei.dto.UsuarioResponseDTO;
 import com.senac.fiscalizei.model.Usuario;
 import com.senac.fiscalizei.service.UsuarioService;
 import jakarta.validation.Valid;
@@ -33,6 +34,12 @@ public class UsuarioController {
     
     public ResponseEntity<List<Usuario>> todosUsuarios() {
         return ResponseEntity.ok(service.listarTodos());
+    }
+
+    @GetMapping("/colaboradores")
+    public ResponseEntity<List<UsuarioResponseDTO>> listarColaboradores() {
+        List<UsuarioResponseDTO> colaboradores = service.listarColaboradores();
+        return ResponseEntity.ok(colaboradores);
     }
 
     @PostMapping("/login")
