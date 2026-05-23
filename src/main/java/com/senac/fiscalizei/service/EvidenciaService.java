@@ -9,12 +9,22 @@ import com.senac.fiscalizei.model.Usuario;
 import com.senac.fiscalizei.repository.EvidenciaRepository;
 import com.senac.fiscalizei.repository.TarefaRepository;
 import com.senac.fiscalizei.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class EvidenciaService {
+
+    @Value("${upload.evidencia.dir:uploads/evidencias}")
+    private String uploadDir;
 
     private final EvidenciaRepository evidenciaRepository;
     private final TarefaRepository tarefaRepository;
@@ -66,5 +76,43 @@ public class EvidenciaService {
         );
 
         return evidenciaRepository.save(evidencia);
+    }
+
+    public Evidencia atualizarFoto(Long id, MultipartFile foto) throws IOException {
+        if (foto == null || foto.isEmpty()) {
+            throw new EvidenciaException("Nenhuma foto enviada.");
+        }
+
+        String contentType = foto.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new EvidenciaException("O arquivo enviado não é uma imagem válida.");
+        }
+
+        Evidencia evidencia = findById(id);
+
+        Path pastaUpload = Paths.get(uploadDir);
+        Files.createDirectories(pastaUpload);
+
+        if (evidencia.getFotoUrl() != null) {
+            Path fotoAntiga = Paths.get(evidencia.getFotoUrl());
+            Files.deleteIfExists(fotoAntiga);
+        }
+
+        String extensao = obterExtensao(foto.getOriginalFilename());
+        String nomeArquivo = id + "_" + UUID.randomUUID() + extensao;
+        Path caminhoFinal = pastaUpload.resolve(nomeArquivo);
+
+        Files.write(caminhoFinal, foto.getBytes());
+
+        evidencia.setFotoUrl(caminhoFinal.toString());
+        return evidenciaRepository.save(evidencia);
+    }
+
+    private String obterExtensao(String nomeOriginal) {
+        if (nomeOriginal == null || !nomeOriginal.contains(".")) {
+            return ".jpg";
+        }
+
+        return nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
     }
 }
