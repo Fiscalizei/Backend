@@ -1,12 +1,12 @@
 package com.senac.fiscalizei.service;
 
 import com.senac.fiscalizei.dto.TarefaRequestDTO;
+import com.senac.fiscalizei.enums.StatusTarefa;
 import com.senac.fiscalizei.exception.TarefaException;
 import com.senac.fiscalizei.model.Tarefa;
 import com.senac.fiscalizei.model.Usuario;
 import com.senac.fiscalizei.repository.TarefaRepository;
 import com.senac.fiscalizei.repository.UsuarioRepository;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +24,22 @@ public class TarefaService {
 
     public List<Tarefa> findByAll(){
         return tarefaRepository.findAll();
+    }
+
+    public List<Tarefa> findByFilters(Long idAdmin, StatusTarefa status) {
+        if (idAdmin != null && status != null) {
+            return tarefaRepository.findByAdminCriadorIdAndStatus(idAdmin, status);
+        }
+
+        if (idAdmin != null) {
+            return tarefaRepository.findByAdminCriadorId(idAdmin);
+        }
+
+        if (status != null) {
+            return tarefaRepository.findByStatus(status);
+        }
+
+        return findByAll();
     }
 
 

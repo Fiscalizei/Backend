@@ -2,6 +2,7 @@ package com.senac.fiscalizei.controller;
 
 import com.senac.fiscalizei.dto.ApiResponse;
 import com.senac.fiscalizei.dto.TarefaRequestDTO;
+import com.senac.fiscalizei.enums.StatusTarefa;
 import com.senac.fiscalizei.model.Tarefa;
 import com.senac.fiscalizei.service.TarefaService;
 import jakarta.validation.Valid;
@@ -23,8 +24,11 @@ public class TarefaController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Tarefa>> listarTodas() {
-        List<Tarefa> tarefas = tarefaService.findByAll();
+    public ResponseEntity<List<Tarefa>> listarTodas(
+            @RequestParam(required = false) Long idAdmin,
+            @RequestParam(required = false) StatusTarefa status
+    ) {
+        List<Tarefa> tarefas = tarefaService.findByFilters(idAdmin, status);
         return ResponseEntity.ok(tarefas);
     }
 

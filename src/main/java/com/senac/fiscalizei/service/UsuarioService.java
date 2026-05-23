@@ -35,6 +35,13 @@ public class UsuarioService {
         return repository.findAll();
     }
 
+    public List<UsuarioResponseDTO> listarTodosDto() {
+        return repository.findAll()
+                .stream()
+                .map(this::toResponseDTO)
+                .toList();
+    }
+
     public Usuario buscarEmail(String email) {
         return repository.findByEmail(email)
                 .orElseThrow(() -> new UsuarioException("Usuário não encontrado com o e-mail: " + email));
@@ -47,7 +54,7 @@ public class UsuarioService {
     public List<UsuarioResponseDTO> listarColaboradores() {
         return repository.findByRoleUsuarioOrderByNomeAsc(RoleUsuario.COLABORADOR)
                 .stream()
-                .map(u -> new UsuarioResponseDTO(u.getId(), u.getNome(), u.getEmail()))
+                .map(this::toResponseDTO)
                 .toList();
     }
 
@@ -68,7 +75,7 @@ public class UsuarioService {
     }
 
     public Usuario atualizar(Long id, UsuarioDTO usuarioDTO) {
-        if (repository.existsById(id)) {
+        if (!repository.existsById(id)) {
             throw new UsuarioException("Usuário não encontrado!");
         }
 
@@ -95,6 +102,18 @@ public class UsuarioService {
             throw new UsuarioException("Senha inválida!");
         }
         return usuario;
+    }
+
+    public UsuarioResponseDTO loginResponse(LoginDTO loginDTO) {
+        return toResponseDTO(login(loginDTO));
+    }
+
+    public UsuarioResponseDTO criarResponse(UsuarioDTO dto) {
+        return toResponseDTO(criar(dto));
+    }
+
+    public UsuarioResponseDTO atualizarResponse(Long id, UsuarioDTO usuarioDTO) {
+        return toResponseDTO(atualizar(id, usuarioDTO));
     }
 
     public Usuario atualizarFoto(Long id, MultipartFile foto) throws IOException {
@@ -136,6 +155,19 @@ public class UsuarioService {
     private String obterExtensao(String nomeOriginal) {
         if (nomeOriginal == null || !nomeOriginal.contains(".")) return ".jpg";
         return nomeOriginal.substring(nomeOriginal.lastIndexOf("."));
+    }
+
+    public UsuarioResponseDTO atualizarFotoResponse(Long id, MultipartFile foto) throws IOException {
+        return toResponseDTO(atualizarFoto(id, foto));
+    }
+
+    private UsuarioResponseDTO toResponseDTO(Usuario usuario) {
+        return new UsuarioResponseDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getRole()
+        );
     }
 
 }

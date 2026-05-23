@@ -32,8 +32,9 @@ public class UsuarioController {
         this.service = service;
     }
     
-    public ResponseEntity<List<Usuario>> todosUsuarios() {
-        return ResponseEntity.ok(service.listarTodos());
+    @GetMapping
+    public ResponseEntity<List<UsuarioResponseDTO>> todosUsuarios() {
+        return ResponseEntity.ok(service.listarTodosDto());
     }
 
     @GetMapping("/colaboradores")
@@ -43,29 +44,27 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Usuario> login(@RequestBody @Valid LoginDTO loginDTO) {
-        Usuario usuario = service.login(loginDTO);
-
-        return ResponseEntity.ok(usuario);
+    public ResponseEntity<UsuarioResponseDTO> login(@RequestBody @Valid LoginDTO loginDTO) {
+        return ResponseEntity.ok(service.loginResponse(loginDTO));
     }
 
     @PostMapping
-    public ResponseEntity<Usuario> cadastrar(@RequestBody @Valid UsuarioDTO usuarioDTO) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.criar(usuarioDTO));
+    public ResponseEntity<UsuarioResponseDTO> cadastrar(@RequestBody @Valid UsuarioDTO usuarioDTO) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(service.criarResponse(usuarioDTO));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Usuario> atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioDTO usuarioDTO) {
-        return ResponseEntity.ok(service.atualizar(id, usuarioDTO));
+    public ResponseEntity<UsuarioResponseDTO> atualizar(@PathVariable Long id, @RequestBody @Valid UsuarioDTO usuarioDTO) {
+        return ResponseEntity.ok(service.atualizarResponse(id, usuarioDTO));
     }
 
     // Atualiza apenas a foto — recebe multipart/form-data com campo "foto"
     @PatchMapping(value = "/{id}/foto", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Usuario> atualizarFoto(
+    public ResponseEntity<UsuarioResponseDTO> atualizarFoto(
             @PathVariable Long id,
             @RequestParam("foto") MultipartFile foto) {
         try {
-            return ResponseEntity.ok(service.atualizarFoto(id, foto));
+            return ResponseEntity.ok(service.atualizarFotoResponse(id, foto));
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
