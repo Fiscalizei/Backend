@@ -2,7 +2,7 @@ package com.senac.fiscalizei.enums;
 
 public enum StatusTarefa {
     PENDENTE,
-    EM_ANDAMENTO,
-    CONCLUIDA,
+    EM_ANDAMENTO,    CONCLUIDA,
+    REJEITADO,
     CANCELADA
 }

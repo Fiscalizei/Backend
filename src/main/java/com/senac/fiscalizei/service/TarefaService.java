@@ -98,5 +98,13 @@ public class TarefaService {
         return tarefaRepository.save(tarefaExistente);
     }
 
+    public Tarefa updateStatus(Long id, StatusTarefa novoStatus) {
+        Tarefa tarefa = tarefaRepository.findById(id)
+                .orElseThrow(() -> new TarefaException("Tarefa não encontrada com o ID: " + id));
+
+        tarefa.setStatus(novoStatus);
+        return tarefaRepository.save(tarefa);
+    }
+
 
 }

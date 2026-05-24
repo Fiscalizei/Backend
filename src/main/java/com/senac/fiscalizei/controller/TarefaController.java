@@ -55,4 +55,16 @@ public class TarefaController {
         tarefaService.update(id, tarefaDto);
         return ResponseEntity.ok(ApiResponse.success("Tarefa atualizada com sucesso!"));
     }
+
+    @PutMapping("/{id}/aprovar")
+    public ResponseEntity<ApiResponse> aprovar(@PathVariable Long id) {
+        tarefaService.updateStatus(id, StatusTarefa.CONCLUIDA);
+        return ResponseEntity.ok(ApiResponse.success("Tarefa aprovada com sucesso!"));
+    }
+
+    @PutMapping("/{id}/reprovar")
+    public ResponseEntity<ApiResponse> reprovar(@PathVariable Long id) {
+        tarefaService.updateStatus(id, StatusTarefa.REJEITADO);
+        return ResponseEntity.ok(ApiResponse.success("Tarefa reprovada com sucesso!"));
+    }
 }

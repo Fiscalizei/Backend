@@ -94,4 +94,21 @@ public class EvidenciaController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Evidência criada com sucesso!"));
     }
+
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse> criarComFoto(
+            @RequestParam("tarefaId") Long tarefaId,
+            @RequestParam("foto") MultipartFile foto,
+            @RequestParam(value = "usuarioAtribuidoId", required = false) Long usuarioAtribuidoId,
+            @RequestParam(value = "adminCriadorId", required = false) Long adminCriadorId,
+            @RequestParam(value = "comentario", required = false) String comentario) {
+        try {
+            evidenciaService.createWithFoto(tarefaId, foto, usuarioAtribuidoId, adminCriadorId, comentario);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(ApiResponse.success("Evidência enviada com sucesso!"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(e.getMessage()));
+        }
+    }
 }

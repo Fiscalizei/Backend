@@ -1,6 +1,7 @@
 package com.senac.fiscalizei.service;
 
 import com.senac.fiscalizei.dto.EvidenciaRequestDTO;
+import com.senac.fiscalizei.enums.StatusTarefa;
 import com.senac.fiscalizei.exception.EvidenciaException;
 import com.senac.fiscalizei.exception.TarefaException;
 import com.senac.fiscalizei.model.Evidencia;
@@ -74,6 +75,58 @@ public class EvidenciaService {
                 atribuido,
                 admin
         );
+
+        return evidenciaRepository.save(evidencia);
+    }
+
+    public Evidencia createWithFoto(Long tarefaId, MultipartFile foto, Long usuarioAtribuidoId, Long adminCriadorId, String comentario) throws IOException {
+        if (tarefaId == null) {
+            throw new EvidenciaException("ID da tarefa não pode ser nulo.");
+        }
+
+        if (foto == null || foto.isEmpty()) {
+            throw new EvidenciaException("Nenhuma foto enviada.");
+        }
+
+        String contentType = foto.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new EvidenciaException("O arquivo enviado não é uma imagem válida.");
+        }
+
+        Tarefa tarefa = tarefaRepository.findById(tarefaId)
+                .orElseThrow(() -> new TarefaException("Tarefa não encontrada!"));
+
+        Usuario admin = null;
+        if (adminCriadorId != null) {
+            admin = usuarioRepository.findById(adminCriadorId)
+                    .orElseThrow(() -> new EvidenciaException("Administrador não encontrado!"));
+        }
+
+        Usuario atribuido = null;
+        if (usuarioAtribuidoId != null) {
+            atribuido = usuarioRepository.findById(usuarioAtribuidoId)
+                    .orElseThrow(() -> new EvidenciaException("Usuário atribuído não encontrado!"));
+        }
+
+        Path pastaUpload = Paths.get(uploadDir);
+        Files.createDirectories(pastaUpload);
+
+        String extensao = obterExtensao(foto.getOriginalFilename());
+        String nomeArquivo = tarefaId + "_" + UUID.randomUUID() + extensao;
+        Path caminhoFinal = pastaUpload.resolve(nomeArquivo);
+
+        Files.write(caminhoFinal, foto.getBytes());
+
+        Evidencia evidencia = new Evidencia(
+                tarefa,
+                caminhoFinal.toString(),
+                comentario,
+                atribuido,
+                admin
+        );
+
+        tarefa.setStatus(StatusTarefa.EM_ANDAMENTO);
+        tarefaRepository.save(tarefa);
 
         return evidenciaRepository.save(evidencia);
     }
